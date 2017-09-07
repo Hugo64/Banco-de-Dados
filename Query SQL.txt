@@ -1,0 +1,130 @@
+﻿	Para criar um banco de dados:
+
+> create database Escola;
+
+ 	Para usar o banco de dados:
+
+> use Escola;
+
+ 	Para criar um usuário de banco de dados:
+	- Cria o login AbolrousHazem com a senha '340 $ Uuxwp7Mcxo7Khy':
+
+> create login ADMSQL with password = 'teste123';
+
+ 	- Cria um usuário de banco de dados para o login criado acima:
+
+> create user ADMSQL for login ADMSQL;
+
+ 	- Concedendo apenas o direito de select ao usuário na tabela Livro: (Para saber todos os direitos que pode conceder consulte o livro de SQL da casa do codigo na pagina: 76. Existe também na página 79 outro direitos que podem ser concedidos, porém são direitos mais avançados do sistema como por exemplo o direito de alterar um  usuário do banco de dados).
+
+> grant select on Livro to ADMSQL;
+
+ 	- Revogando o direito:
+
+> revoke select on Livro from ADMSQL;
+
+ 	- Concedendo direito apenas uma coluna da tabela do banco de dados:
+
+> grant select (C_NomeLivro) from Livro to ADMSQL;
+
+ 	- Para revogar:
+
+> revoke select (C_NomeLivro) on Livro to ADMSQL;
+
+	- Outro recurso que pode ser usado no momento de executar o comando de GRANT é o WITH GRANT OPTION. Ele permite ao usuário que está recebendo a concessão o poder de também dar acesso para outros usuários. Vejo o exemplo:
+
+> grant select on Aluno to AdmUser with grant option;
+
+	Obs: Com isso, ele também pode conceder esses direitos a outros usuários.
+
+ 	- Para excluir um usuário:
+
+> drop user ADMSQL;
+
+ 	Criando tabela com auto_increment:
+
+> create table Aluno(
+id int not null identity primary key,
+C_Nome varchar(45) not null,
+C_CPF varchar(25) not null,
+C_Idade varchar(5) not null
+);
+
+ 	Criando tabela com foreign key:
+
+create table Livro(
+id int not null identity primary key,
+C_Nome varchar(45) not null,
+C_Codigo varchar(50) not null,
+id_Aluno int not null,
+foreign key(id_Aluno) references Aluno(id)
+);
+
+ 	- Criando tabela apartir e um select na outra (com os dados sendo puxado junto, mas essa tabela não é consistente! Pois a chave estrangeira não é replicada, é apenas uma tabela para ser descatada depois):
+
+> select * into teste1 from Livro;
+
+ 	- Caso queira apenas a estrutura faça (com os dados sendo puxado junto, mas essa tabela não é consistente! Pois a chave estrangeira não é replicada, é apenas uma tabela para ser descatada depois):
+
+> select * into teste1 from Livro where 1<>1;
+
+	- Adicionando nova coluna na tabela (a tabela não pode conter not null, pois se já existe dados nela, não seá permitido, só será caso a tabela ainda esteja vazia):
+
+> alter table Livro add D_Multa double precision;
+
+-	 Adicionando um nova coluna do tipo not null em uma tabela vazia:
+
+> alter table Livro add D_Multa double precision not null;
+
+	- Deletando uma coluna da tabela:
+
+> alter table Livro drop column D_Multa;
+
+	- Alterando a coluna da tabela:
+
+> alter table Livro alter column C_Codigo varchar(45) not null;
+
+	- Alterando o nome de uma coluna de um tabela (Cuidado: a alteração de qualquer parte de um nome de objeto pode interromper scripts e procedimentos armazenados.):
+
+> exec sp_rename 'Livro.C_NomeLivro', 'C_NomeDoLivro', 'COLUMN';
+
+	- Exibindo dados de uma tabela odenada pelo nome do livro:
+
+> select C_NomeDoLivro from Livro order by C_NomeDoLivro;
+
+	- Exibindo dados de uma tabela odenada pelo nome em ordem alfabetica:
+
+> select C_NomeDoLivro from Livro order by C_NomeDoLivro asc;
+
+	- Em ordem decrescente:
+
+> select C_NomeDoLivro from Livro order by C_NomeDoLivro desc;
+
+	- Exibindo dados da multa do livro em um intevalo de valores entre 10 a 50 reais ordenando por Multa:
+
+> select C_NomeDoLivro, D_Multa from Livro where D_Multa between 10.0 and 50.0 order by D_Multa;
+
+ 	Inserindo dados:
+
+> insert into Aluno (C_Nome, C_CPF, C_Idade) values ('Hugo', '074.740.485-23', '22');
+
+> insert into Livro (C_Nome, C_Codigo, id_Aluno) values ('SQL Server', '872991773', 1);
+
+ 	Exibindo dados:
+
+> select * from Aluno;
+
+ 	- Pagando todos os dados de uma tabela:
+
+> truncate table Livro;
+
+
+JOINS SQL:
+
+   Inner outer Join: Trás no select somente os dados que estão interligados entre tabelas, quando há uma relação de dados foreign key.
+   
+   Left outer Join: Trás no select os dados das tabelas relacionadas, porém, mesmo que não exista relação de dados entre a tabela da direta com a esqueda, ele trás os dados da tabela da esquerda.
+   
+   Right outer Join: Trás no select os dados das tabelas relacionadas, porém, mesmo que não exista relaçção de dados entre a tabela da direita com a esquerda, ele trás os dados da tabela da direita.
+
+   Full outer join: Trás no select os dados de ambas tabelas, mesmo que não tenha dados relacionados entre eles.
